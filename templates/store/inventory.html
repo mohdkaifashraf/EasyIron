@@ -1,0 +1,8 @@
+{% extends "store/base.html" %}
+{% block title %}Inventory{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="page-kicker">Garment tracking</span><h1>Customer Clothes Inventory</h1><p>Every active order and garment currently in store care.</p></div><span class="count-pill">{{ totals.total_pieces|default:0 }} pieces in care</span></div>
+<div class="inventory-grid">
+{% for order in orders %}<article class="inventory-card"><div class="inventory-head"><div><span>{{ order.order_number }}</span><h3>{{ order.customer_name }}</h3></div><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></div><div class="inventory-items">{% for item in order.items.all %}<div><span>{{ item.item_name }}</span><strong>{{ item.quantity }}</strong></div>{% endfor %}</div><div class="inventory-foot"><span><i class="bi bi-box-seam"></i> {{ order.item_count }} total pieces</span><a href="{% url 'store:order_detail' order.pk %}">View order <i class="bi bi-arrow-right"></i></a></div></article>{% empty %}<div class="panel empty-table"><i class="bi bi-box2-heart"></i><p>No active garments are currently in store.</p></div>{% endfor %}
+</div>
+{% endblock %}

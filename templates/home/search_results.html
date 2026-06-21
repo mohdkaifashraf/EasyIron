@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{% if query %}{{ query }} Services{% else %}Search Services{% endif %} — EasyIron{% endblock %}
+
+{% block content %}
+<main class="search-page">
+  <section class="search-hero">
+    <div class="container">
+      <a class="back-link" href="{% url 'home:homepage' %}"><i class="bi bi-arrow-left"></i> Back to home</a>
+      <span class="eyebrow light">Find your garment care</span>
+      <h1>{% if query %}Results for “{{ query }}”{% else %}What would you like us to care for?{% endif %}</h1>
+      <form class="service-search results-search" action="{% url 'home:search_services' %}" method="get" role="search">
+        <i class="bi bi-search"></i>
+        <input type="search" name="q" value="{{ query }}" placeholder="Try ironing, laundry, shirt or saree" aria-label="Search services" required autofocus>
+        <button type="submit">Search</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="section-pad search-results">
+    <div class="container">
+      {% if query and results %}
+        <div class="results-heading">
+          <div><span class="eyebrow">Available to order</span><h2>{{ results|length }} service{{ results|length|pluralize }} found</h2></div>
+          <p>Choose the quantity and add services to your laundry bag.</p>
+        </div>
+        <div class="row g-4">
+          {% for item in results %}
+          <div class="col-sm-6 col-lg-3">
+            <article class="item-card" data-name="{{ item.name }}" data-price="{{ item.price }}">
+              <div class="item-image">
+                <i class="bi {{ item.icon|default:'bi-basket2' }}"></i>
+                <span class="care-tag">{{ item.category }}</span>
+              </div>
+              <div class="item-body">
+                <h4>{{ item.name }}</h4>
+                <div class="rating"><span>★★★★★</span> <small>({{ item.reviews }} Reviews)</small></div>
+                <div class="item-price">₹{{ item.price|floatformat:"-2" }} <small>per piece</small></div>
+                <div class="item-actions">
+                  <div class="quantity"><button class="qty-minus" type="button">−</button><span>1</span><button class="qty-plus" type="button">+</button></div>
+                  <button class="btn add-cart" type="button"><i class="bi bi-plus-lg"></i> Add</button>
+                </div>
+              </div>
+            </article>
+          </div>
+          {% endfor %}
+        </div>
+      {% elif query %}
+        <div class="no-results">
+          <div class="no-results-icon"><i class="bi bi-search-heart"></i></div>
+          <h2>No services found for “{{ query }}”</h2>
+          <p>Try a broader search such as “ironing”, “laundry”, “shirt”, or “dry cleaning”.</p>
+          <a class="btn btn-brand" href="{% url 'home:homepage' %}#services">Browse all services</a>
+        </div>
+      {% else %}
+        <div class="no-results">
+          <div class="no-results-icon"><i class="bi bi-basket2"></i></div>
+          <h2>Start with a service or clothing item</h2>
+          <p>Search for ironing, laundry, dry cleaning, shirt, pant, saree and more.</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</main>
+{% endblock %}

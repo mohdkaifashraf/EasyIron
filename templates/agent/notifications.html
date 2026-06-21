@@ -1,0 +1,4 @@
+{% extends "agent/base.html" %}{% block title %}Notifications{% endblock %}{% block content %}
+<div class="agent-page-head"><div><span>Stay updated</span><h1>Notifications</h1><p>Assignments, cancellations and store-ready alerts.</p></div></div>
+<section class="agent-panel notification-list">{% for item in notification_items %}<article class="{% if not item.is_read %}unread{% endif %}"><span><i class="bi {% if item.notification_type == 'assignment' %}bi-lightning-charge{% else %}bi-bell{% endif %}"></i></span><div><h3>{{ item.title }}</h3><p>{{ item.message }}</p><small>{{ item.created_at|timesince }} ago{% if item.order %} · {{ item.order.order_number }}{% endif %}</small></div>{% if item.order %}<a href="{% url 'agent:order_detail' item.order_id %}"><i class="bi bi-chevron-right"></i></a>{% endif %}</article>{% empty %}<div class="empty-agent-state"><i class="bi bi-bell-slash"></i><p>No notifications yet.</p></div>{% endfor %}</section>
+{% endblock %}

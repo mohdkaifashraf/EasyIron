@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}EasyIron — Laundry, delivered fresh{% endblock %}
+
+{% block content %}
+<main>
+  <section class="hero" id="home">
+    <div class="container hero-content">
+      <div class="row align-items-center min-vh-100">
+        <div class="col-lg-7">
+          <div class="hero-copy">
+            <div class="hero-pill"><span></span> Trusted garment care, now at your doorstep</div>
+            <h1>Professional Laundry &amp; Ironing Service <em>at Your Doorstep</em></h1>
+            <p>Free Pickup &amp; Delivery. Fast, Reliable and Affordable.</p>
+            <div class="d-flex flex-wrap gap-3">
+              <a href="#clothes" class="btn btn-brand btn-lg">Book Now <i class="bi bi-arrow-right"></i></a>
+              <a href="#how-it-works" class="btn btn-glass btn-lg">Learn More</a>
+            </div>
+            <form class="service-search" action="{% url 'home:search_services' %}" method="get" role="search">
+              <i class="bi bi-search"></i>
+              <input type="search" name="q" placeholder="Search ironing, laundry, shirt, saree..." aria-label="Search services" required>
+              <button type="submit">Find service</button>
+            </form>
+            <div class="hero-trust">
+              <div class="avatar-stack"><span>AM</span><span>NS</span><span>RK</span><span>+</span></div>
+              <div><div class="stars">★★★★★</div><small>Loved by 2,500+ happy customers</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-wave"></div>
+  </section>
+
+  <section class="promo-wrap">
+    <div class="container">
+      <div id="promoCarousel" class="carousel slide promo-carousel" data-bs-ride="carousel" data-bs-interval="3200">
+        <div class="carousel-inner">
+          {% for banner in banners %}
+          <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <div class="promo-slide">
+              <div class="promo-icon"><i class="bi {% cycle 'bi-percent' 'bi-truck' 'bi-lightning-charge' 'bi-stars' 'bi-calendar2-check' %}"></i></div>
+              <div><h3>{{ banner.title }}</h3><p>{{ banner.subtitle }}</p></div>
+              <a href="#clothes">Claim offer <i class="bi bi-arrow-up-right"></i></a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev"><i class="bi bi-chevron-left"></i></button>
+        <button class="carousel-control-next" type="button" data-bs-target="#promoCarousel" data-bs-slide="next"><i class="bi bi-chevron-right"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad clothes-section" id="clothes">
+    <div class="container">
+      <div class="section-heading text-center">
+        <span class="eyebrow">Choose your service</span>
+        <h2>Everything we can care for</h2>
+        <p>Select a service below, choose your items and add them to your laundry bag.</p>
+      </div>
+
+      <nav class="service-jump-nav" aria-label="Service categories">
+        {% for group in item_groups %}
+        <a href="#service-{{ group.slug }}">{{ group.name }}</a>
+        {% endfor %}
+      </nav>
+
+      <div class="service-shelves">
+        {% for group in item_groups %}
+        <section class="service-shelf" id="service-{{ group.slug }}">
+          <div class="service-shelf-heading">
+            <div>
+              <span class="service-number">0{{ forloop.counter }}</span>
+              <h3>{{ group.name }}</h3>
+            </div>
+            <span>{{ group.items|length }} services available</span>
+          </div>
+          <div class="row g-4">
+            {% for item in group.items %}
+            <div class="col-sm-6 col-lg-3">
+              <article class="item-card" data-name="{{ item.name }}" data-price="{{ item.price }}">
+                <div class="item-image"><i class="bi {{ item.icon }}"></i><span class="care-tag">Popular</span></div>
+                <div class="item-body">
+                  <h4>{{ item.name }}</h4>
+                  <div class="rating"><span>★★★★★</span> <small>({{ item.reviews }} Reviews)</small></div>
+                  <div class="item-price">₹{{ item.price }} <small>per piece</small></div>
+                  <div class="item-actions">
+                    <div class="quantity"><button class="qty-minus">−</button><span>1</span><button class="qty-plus">+</button></div>
+                    <button class="btn add-cart"><i class="bi bi-plus-lg"></i> Add</button>
+                  </div>
+                </div>
+              </article>
+            </div>
+            {% endfor %}
+          </div>
+        </section>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad offers-section">
+    <div class="container">
+      <div class="section-heading text-center"><span class="eyebrow light">More care, less cost</span><h2 class="text-white">Offers made for your routine</h2></div>
+      <div class="row g-3">
+        <div class="col-md-6 col-xl-3"><div class="offer-card coral"><i class="bi bi-percent"></i><span>Welcome offer</span><h3>First Order<br>50% OFF</h3><a href="#">Use EASY50 <i class="bi bi-arrow-right"></i></a></div></div>
+        <div class="col-md-6 col-xl-3"><div class="offer-card mint"><i class="bi bi-truck"></i><span>Doorstep care</span><h3>Free Pickup<br>Above ₹199</h3><a href="#">Book now <i class="bi bi-arrow-right"></i></a></div></div>
+        <div class="col-md-6 col-xl-3"><div class="offer-card yellow"><i class="bi bi-gift"></i><span>Share the fresh</span><h3>Refer &amp; Earn<br>₹100</h3><a href="#">Invite friends <i class="bi bi-arrow-right"></i></a></div></div>
+        <div class="col-md-6 col-xl-3"><div class="offer-card blue"><i class="bi bi-calendar2-heart"></i><span>Best value</span><h3>Subscription<br>Plans</h3><a href="#">View plans <i class="bi bi-arrow-right"></i></a></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad" id="how-it-works">
+    <div class="container">
+      <div class="section-heading text-center"><span class="eyebrow">Simple by design</span><h2>Fresh clothes in four easy steps</h2></div>
+      <div class="steps-row">
+        <div class="step-card"><div class="step-no">01</div><div class="step-icon"><i class="bi bi-phone"></i></div><h4>Book Service</h4><p>Choose services and a pickup slot that works for you.</p></div>
+        <div class="step-card"><div class="step-no">02</div><div class="step-icon"><i class="bi bi-bicycle"></i></div><h4>Doorstep Pickup</h4><p>Our verified delivery agent collects your garments.</p></div>
+        <div class="step-card"><div class="step-no">03</div><div class="step-icon"><i class="bi bi-stars"></i></div><h4>Expert Processing</h4><p>Your clothes receive professional, fabric-safe care.</p></div>
+        <div class="step-card"><div class="step-no">04</div><div class="step-icon"><i class="bi bi-house-check"></i></div><h4>Fresh Delivery</h4><p>Clean, crisp clothes return safely to your doorstep.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad why-section" id="track">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-5">
+          <span class="eyebrow">The EasyIron promise</span>
+          <h2>Garment care you can <em>count on.</em></h2>
+          <p>From pickup to delivery, every detail is designed around quality, transparency and your peace of mind.</p>
+          <div class="tracking-demo">
+            <div class="d-flex justify-content-between"><span>Order #EI2048</span><strong>Out for delivery</strong></div>
+            <div class="track-line"><span></span></div>
+            <div class="d-flex justify-content-between small"><span>Picked up</span><span>Processed</span><span>On the way</span></div>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <div class="row g-3">
+            <div class="col-sm-6"><div class="feature-card"><i class="bi bi-person-check"></i><div><h4>Professional Staff</h4><p>Trained specialists for every fabric.</p></div></div></div>
+            <div class="col-sm-6"><div class="feature-card"><i class="bi bi-wallet2"></i><div><h4>Affordable Pricing</h4><p>Clear prices with no surprises.</p></div></div></div>
+            <div class="col-sm-6"><div class="feature-card"><i class="bi bi-geo-alt"></i><div><h4>Real-Time Tracking</h4><p>Know where your order is, always.</p></div></div></div>
+            <div class="col-sm-6"><div class="feature-card"><i class="bi bi-truck"></i><div><h4>Free Pickup &amp; Delivery</h4><p>Convenience delivered to your door.</p></div></div></div>
+            <div class="col-sm-6"><div class="feature-card"><i class="bi bi-lightning"></i><div><h4>Same-Day Service</h4><p>For when fresh can't wait.</p></div></div></div>
+            <div class="col-sm-6"><div class="feature-card"><i class="bi bi-shield-check"></i><div><h4>Secure Handling</h4><p>Tagged, tracked and carefully packed.</p></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad reviews-section">
+    <div class="container">
+      <div class="section-heading text-center"><span class="eyebrow">Freshly reviewed</span><h2>What our customers say</h2></div>
+      <div class="row g-4">
+        {% for review in reviews %}
+        <div class="col-lg-4">
+          <article class="review-card">
+            <i class="bi bi-quote quote"></i>
+            <div class="stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% endif %}{% endfor %}</div>
+            <p>“{{ review.review }}”</p>
+            <div class="reviewer"><div class="review-avatar">{{ review.name|slice:":1" }}</div><div><h5>{{ review.name }}</h5><span>Verified customer</span></div><i class="bi bi-patch-check-fill"></i></div>
+          </article>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad about-section" id="about">
+    <div class="container">
+      <div class="row g-5 align-items-start">
+        <div class="col-lg-5"><span class="eyebrow">About EasyIron</span><h2>Making everyday garment care feel effortless.</h2><p class="lead">EasyIron is a modern laundry and ironing service built around one simple belief: taking care of your clothes shouldn't take over your day.</p><div class="service-areas"><i class="bi bi-geo-alt-fill"></i><div><strong>Service areas</strong><span>Delhi NCR · Mumbai · Bengaluru · Hyderabad · Pune</span></div></div></div>
+        <div class="col-lg-7">
+          <div class="about-grid">
+            <div><span>Our mission</span><h4>Give time back</h4><p>Deliver reliable garment care so customers can focus on what matters to them.</p></div>
+            <div><span>Our vision</span><h4>Care, reimagined</h4><p>Become India's most trusted and sustainable doorstep laundry partner.</p></div>
+            <div class="about-stat"><strong>25K+</strong><span>Garments cared for</span></div>
+            <div class="about-stat"><strong>98%</strong><span>On-time deliveries</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="row g-5 footer-main">
+      <div class="col-lg-4"><a class="navbar-brand footer-brand" href="#home"><span class="logo-mark"><i class="bi bi-water"></i></span>Easy<span>Iron</span></a><p>Professional laundry and garment care, picked up and delivered with a little more thought.</p><div class="socials"><a href="#"><i class="bi bi-instagram"></i></a><a href="#"><i class="bi bi-facebook"></i></a><a href="#"><i class="bi bi-twitter-x"></i></a><a href="#"><i class="bi bi-linkedin"></i></a></div></div>
+      <div class="col-6 col-lg-2"><h5>Company</h5><a href="#about">About Us</a><a href="#clothes">Services</a><a href="{% url 'home:help_center' %}">Contact Us</a></div>
+      <div class="col-6 col-lg-2"><h5>Services</h5><a href="#clothes">Ironing</a><a href="#clothes">Laundry</a><a href="#clothes">Dry Cleaning</a></div>
+      <div class="col-6 col-lg-2"><h5>Support</h5><a href="{% url 'home:help_center' %}#faqs">FAQs</a><a href="#track">Track Order</a><a href="{% url 'home:help_center' %}">Help Centre</a></div>
+      <div class="col-6 col-lg-2"><h5>Legal</h5><a href="#">Privacy Policy</a><a href="#">Terms &amp; Conditions</a><a href="#">Refund Policy</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 EasyIron. All rights reserved.</span><span>Washed with care <i class="bi bi-heart-fill"></i> in India</span></div>
+  </div>
+</footer>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Help Centre — EasyIron{% endblock %}
+
+{% block content %}
+<main class="help-page">
+  <section class="help-hero">
+    <div class="container text-center">
+      <span class="eyebrow light">EasyIron Support</span>
+      <h1>How can we help?</h1>
+      <p>Find quick answers or connect with our garment-care team.</p>
+      <a class="btn btn-light" href="#faqs">Browse FAQs</a>
+    </div>
+  </section>
+
+  <section class="section-pad">
+    <div class="container">
+      <div class="section-heading text-center">
+        <span class="eyebrow">Contact support</span>
+        <h2>Talk to a real person</h2>
+        <p>Choose the support channel that works best for you.</p>
+      </div>
+      <div class="row g-4 help-contact-grid">
+        <div class="col-md-4">
+          <a class="help-contact-card" href="tel:+919876543210">
+            <i class="bi bi-telephone"></i>
+            <span>Call support</span>
+            <strong>+91 98765 43210</strong>
+            <small>Available 8 AM–9 PM</small>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a class="help-contact-card" href="mailto:care@easyiron.in">
+            <i class="bi bi-envelope"></i>
+            <span>Email support</span>
+            <strong>care@easyiron.in</strong>
+            <small>Response within 24 hours</small>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a class="help-contact-card whatsapp" href="https://wa.me/919876543210">
+            <i class="bi bi-whatsapp"></i>
+            <span>WhatsApp support</span>
+            <strong>Start a conversation</strong>
+            <small>Usually replies instantly</small>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad help-faq-section" id="faqs">
+    <div class="container">
+      <div class="row g-5">
+        <div class="col-lg-4">
+          <span class="eyebrow">Frequently asked</span>
+          <h2>Common questions, clearly answered.</h2>
+          <p>Still unsure? Our support team will be happy to help.</p>
+        </div>
+        <div class="col-lg-8">
+          <div class="accordion" id="helpFaqs">
+            {% for faq in faqs %}
+            <div class="accordion-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#faq-{{ forloop.counter }}">
+                  {{ faq.question }}
+                </button>
+              </h3>
+              <div id="faq-{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#helpFaqs">
+                <div class="accordion-body">{{ faq.answer }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

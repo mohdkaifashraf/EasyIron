@@ -1,0 +1,22 @@
+{% extends "store/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><span class="page-kicker">Store overview</span><h1>Good day, {{ request.user.first_name|default:request.user.username }}.</h1><p>Here is what is happening at {{ store.name }} today.</p></div>
+  <div class="heading-date"><i class="bi bi-calendar3"></i>{% now "D, d M Y" %}</div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><span class="stat-icon blue"><i class="bi bi-receipt"></i></span><div><small>Total Orders Today</small><strong>{{ stats.total_today }}</strong></div></div>
+  <div class="stat-card"><span class="stat-icon orange"><i class="bi bi-hourglass-split"></i></span><div><small>Pending Orders</small><strong>{{ stats.pending }}</strong></div></div>
+  <div class="stat-card"><span class="stat-icon purple"><i class="bi bi-arrow-repeat"></i></span><div><small>Processing Orders</small><strong>{{ stats.processing }}</strong></div></div>
+  <div class="stat-card"><span class="stat-icon green"><i class="bi bi-bag-check"></i></span><div><small>Ready for Delivery</small><strong>{{ stats.ready }}</strong></div></div>
+  <div class="stat-card"><span class="stat-icon navy"><i class="bi bi-check2-circle"></i></span><div><small>Completed Orders</small><strong>{{ stats.completed }}</strong></div></div>
+  <div class="stat-card revenue"><span class="stat-icon coral"><i class="bi bi-currency-rupee"></i></span><div><small>Revenue Today</small><strong>₹{{ stats.revenue|floatformat:2 }}</strong></div></div>
+</div>
+
+<section class="panel">
+  <div class="panel-heading"><div><h2>Recent Orders</h2><p>Latest orders across your store</p></div><a href="{% url 'store:incoming_orders' %}">View incoming <i class="bi bi-arrow-right"></i></a></div>
+  {% include "store/partials/order_table.html" with orders=orders %}
+</section>
+{% endblock %}
