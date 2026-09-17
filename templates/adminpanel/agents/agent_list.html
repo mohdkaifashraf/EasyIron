@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Delivery Agents · Admin · EasyIron{% endblock %}
+
+{% block content %}
+<main style="padding-top:90px;">
+  <section class="section-pad">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+        <div>
+          <h1 class="mb-1">Delivery Agent Accounts</h1>
+          <p class="text-muted mb-0">Created by admin.</p>
+        </div>
+        <div class="d-flex gap-2">
+          <a class="btn btn-outline-secondary" href="{% url 'adminpanel:dashboard' %}">Back</a>
+          <a class="btn btn-brand" href="{% url 'adminpanel:create_delivery_agent' %}">Create Agent</a>
+        </div>
+      </div>
+
+      <div class="bg-white shadow-sm rounded-4 p-3">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Store</th>
+                <th>Agent</th>
+                <th>Vehicle</th>
+                <th>Availability</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in agents %}
+              <tr>
+                <td><strong>{{ a.store.name }}</strong><div class="text-muted small">{{ a.store.code }}</div></td>
+                <td>
+                  <strong>{{ a.name }}</strong>
+                  <div class="text-muted small">{{ a.email }}</div>
+                  <div class="text-muted small">{{ a.phone }}</div>
+                </td>
+                <td>{{ a.get_vehicle_type_display }}{% if a.vehicle_number %}<div class="text-muted small">{{ a.vehicle_number }}</div>{% endif %}</td>
+                <td>
+                  {% if a.is_active %}<span class="badge text-bg-success">Active</span>{% else %}<span class="badge text-bg-secondary">Inactive</span>{% endif %}
+                  {% if a.is_available %}<div class="small">Available</div>{% else %}<div class="small text-muted">Not available</div>{% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" class="text-center text-muted py-5">No delivery agents yet.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+{% endblock %}
+

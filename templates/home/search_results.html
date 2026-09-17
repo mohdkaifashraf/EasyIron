@@ -36,8 +36,20 @@
                 <div class="rating"><span>★★★★★</span> <small>({{ item.reviews }} Reviews)</small></div>
                 <div class="item-price">₹{{ item.price|floatformat:"-2" }} <small>per piece</small></div>
                 <div class="item-actions">
+                  {% if user.is_authenticated %}
+                  <form action="{% url 'home:add_to_cart' %}" method="post" class="d-flex flex-grow-1 gap-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="item_name" value="{{ item.name }}">
+                    <input type="hidden" name="price" value="{{ item.price }}">
+                    <input type="hidden" name="quantity" value="1">
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <div class="quantity"><button class="qty-minus" type="button">−</button><span>1</span><button class="qty-plus" type="button">+</button></div>
+                    <button class="btn add-cart" type="submit"><i class="bi bi-plus-lg"></i> Add</button>
+                  </form>
+                  {% else %}
                   <div class="quantity"><button class="qty-minus" type="button">−</button><span>1</span><button class="qty-plus" type="button">+</button></div>
-                  <button class="btn add-cart" type="button"><i class="bi bi-plus-lg"></i> Add</button>
+                  <a class="btn add-cart" href="{% url 'home:login' %}?next={{ request.get_full_path|urlencode }}"><i class="bi bi-plus-lg"></i> Add</a>
+                  {% endif %}
                 </div>
               </div>
             </article>

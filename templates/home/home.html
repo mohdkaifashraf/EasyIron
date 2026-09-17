@@ -5,6 +5,7 @@
 {% block content %}
 <main>
   <section class="hero" id="home">
+    <img class="hero-bg-image" src="{% static 'images/easyiron-hero.png' %}" alt="" aria-hidden="true">
     <div class="container hero-content">
       <div class="row align-items-center min-vh-100">
         <div class="col-lg-7">
@@ -25,6 +26,13 @@
               <div class="avatar-stack"><span>AM</span><span>NS</span><span>RK</span><span>+</span></div>
               <div><div class="stars">★★★★★</div><small>Loved by 2,500+ happy customers</small></div>
             </div>
+            {% if messages %}
+            <div class="mt-4">
+              {% for message in messages %}
+              <div class="alert alert-success" role="alert">{{ message }}</div>
+              {% endfor %}
+            </div>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -80,14 +88,33 @@
             {% for item in group.items %}
             <div class="col-sm-6 col-lg-3">
               <article class="item-card" data-name="{{ item.name }}" data-price="{{ item.price }}">
-                <div class="item-image"><i class="bi {{ item.icon }}"></i><span class="care-tag">Popular</span></div>
+                <div class="item-image">
+                  {% if item.image %}
+                    <img src="{% static item.image %}" alt="{{ item.name }}" />
+                  {% else %}
+                    <img src="{% static group.image %}" alt="{{ item.name }}" />
+                  {% endif %}
+                  <span class="care-tag">Popular</span>
+                </div>
                 <div class="item-body">
                   <h4>{{ item.name }}</h4>
                   <div class="rating"><span>★★★★★</span> <small>({{ item.reviews }} Reviews)</small></div>
                   <div class="item-price">₹{{ item.price }} <small>per piece</small></div>
                   <div class="item-actions">
-                    <div class="quantity"><button class="qty-minus">−</button><span>1</span><button class="qty-plus">+</button></div>
-                    <button class="btn add-cart"><i class="bi bi-plus-lg"></i> Add</button>
+                    {% if user.is_authenticated %}
+                    <form action="{% url 'home:add_to_cart' %}" method="post" class="d-flex flex-grow-1 gap-2" data-cart-form>
+                      {% csrf_token %}
+                      <input type="hidden" name="item_name" value="{{ item.name }}">
+                      <input type="hidden" name="price" value="{{ item.price }}">
+                      <input type="hidden" name="quantity" value="1">
+                      <input type="hidden" name="next" value="{{ request.get_full_path }}#clothes">
+                      <div class="quantity"><button class="qty-minus" type="button">−</button><span>1</span><button class="qty-plus" type="button">+</button></div>
+                      <button class="btn add-cart" type="submit"><i class="bi bi-plus-lg"></i> Add</button>
+                    </form>
+                    {% else %}
+                    <div class="quantity"><button class="qty-minus" type="button">−</button><span>1</span><button class="qty-plus" type="button">+</button></div>
+                    <a class="btn add-cart" href="{% url 'home:login' %}?next={{ request.get_full_path|urlencode }}"><i class="bi bi-plus-lg"></i> Add</a>
+                    {% endif %}
                   </div>
                 </div>
               </article>

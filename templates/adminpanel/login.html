@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Admin Login · EasyIron{% endblock %}
+
+{% block content %}
+<main style="padding-top:90px;">
+  <section class="section-pad">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+          <div class="auth-card p-4 shadow-sm bg-white rounded-4">
+            <div class="text-center mb-4">
+              <h2>Admin Login</h2>
+              <p class="text-muted">Sign in with your admin credentials.</p>
+            </div>
+            <form method="post" action="{% url 'adminpanel:login' %}">
+              {% csrf_token %}
+              {% if form.non_field_errors %}
+              <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+              {% endif %}
+              <div class="mb-3">
+                <label class="form-label">Email address</label>
+                {{ form.username }}
+                {{ form.username.errors }}
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                {{ form.password }}
+                {{ form.password.errors }}
+              </div>
+              {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+              <button type="submit" class="btn btn-brand btn-lg w-100">Login</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

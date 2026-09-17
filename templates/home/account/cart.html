@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Cart · EasyIron{% endblock %}
+
+{% block content %}
+<main class="account-page">
+  <section class="section-pad">
+    <div class="container">
+      <div class="section-heading text-center">
+        <span class="eyebrow">Laundry bag</span>
+        <h2>Your current cart</h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-lg-8">
+          {% if items %}
+          <div class="cart-list">
+            {% for item in items %}
+            <div class="cart-item p-4 bg-white shadow-sm rounded-4 mb-3">
+              <div class="account-cart-row">
+                <div class="account-cart-details">
+                  <h5>{{ item.item_name }}</h5>
+                  <p class="mb-0 text-muted">₹{{ item.price }} × {{ item.quantity }}</p>
+                </div>
+                <div class="account-cart-actions">
+                  <form method="post" class="account-cart-update">
+                    {% csrf_token %}
+                    <input type="hidden" name="item_id" value="{{ item.id }}">
+                    <input type="number" name="quantity" min="1" value="{{ item.quantity }}" class="form-control form-control-sm cart-quantity-input">
+                    <button type="submit" name="update_item" class="btn btn-outline-secondary btn-sm">Update</button>
+                  </form>
+                  <form method="post" class="account-cart-remove">
+                    {% csrf_token %}
+                    <input type="hidden" name="item_id" value="{{ item.id }}">
+                    <button type="submit" name="remove_item" class="btn btn-outline-danger btn-sm">Remove</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <div class="text-end mt-3">
+            <form method="post" class="d-inline-block">
+              {% csrf_token %}
+              <button type="submit" name="clear_cart" class="btn btn-outline-secondary">Clear cart</button>
+            </form>
+          </div>
+          {% else %}
+          <div class="empty-state text-center p-5 bg-white shadow-sm rounded-4">
+            <i class="bi bi-basket3"></i>
+            <h3 class="mt-3">Your cart is empty</h3>
+            <p>Add services to your laundry bag to begin.</p>
+            <a href="{% url 'home:homepage' %}#clothes" class="btn btn-brand mt-3">Browse services</a>
+          </div>
+          {% endif %}
+        </div>
+        <div class="col-lg-4">
+          <div class="summary-panel p-4 bg-white shadow-sm rounded-4">
+            <h3>Order summary</h3>
+            <div class="d-flex justify-content-between mt-4"><span>Subtotal</span><strong>₹{{ subtotal }}</strong></div>
+            <div class="mt-4">
+              <a href="#" class="btn btn-brand w-100">Proceed to checkout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

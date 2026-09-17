@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Account · EasyIron{% endblock %}
+
+{% block content %}
+<main class="account-page">
+  <section class="section-pad account-hero">
+    <div class="container">
+      <div class="d-flex flex-column flex-md-row align-items-start justify-content-between gap-3">
+        <div>
+          <span class="eyebrow">My account</span>
+          <h1>Welcome back, {{ user.first_name|default:user.email }}</h1>
+          <p>Manage your profile, orders, addresses, cart and settings from one dashboard.</p>
+        </div>
+        <div class="account-hero-actions d-flex gap-2">
+          <a class="btn btn-outline-secondary" href="{% url 'home:account_profile' %}">Edit profile</a>
+          <a class="btn btn-brand" href="{% url 'home:orders' %}">View orders</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad account-summary">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <article class="account-card">
+            <div class="card-icon bg-mint"><i class="bi bi-person-circle"></i></div>
+            <h3>Profile</h3>
+            <p>{{ user.first_name }}, {{ profile.mobile|default:'No mobile number added yet.' }}</p>
+            <a href="{% url 'home:account_profile' %}">Manage profile <i class="bi bi-arrow-right"></i></a>
+          </article>
+        </div>
+        <div class="col-lg-4">
+          <article class="account-card">
+            <div class="card-icon bg-coral"><i class="bi bi-basket3"></i></div>
+            <h3>Current cart</h3>
+            <p>{{ cart.items.count }} item{{ cart.items.count|pluralize }} · ₹{{ cart.total_amount|default:0 }}</p>
+            <a href="{% url 'home:account_cart' %}">Open cart <i class="bi bi-arrow-right"></i></a>
+          </article>
+        </div>
+        <div class="col-lg-4">
+          <article class="account-card">
+            <div class="card-icon bg-yellow"><i class="bi bi-card-checklist"></i></div>
+            <h3>Orders</h3>
+            <p>{{ orders|length }} recent order{{ orders|length|pluralize }}</p>
+            <a href="{% url 'home:orders' %}">See orders <i class="bi bi-arrow-right"></i></a>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad account-content">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <div class="section-heading"><span class="eyebrow">Notifications</span><h2>Latest updates</h2></div>
+          <div class="list-group">
+            {% for note in notifications %}
+            <div class="list-group-item notification-item">
+              <div>
+                <strong>{{ note.title }}</strong>
+                <p>{{ note.message }}</p>
+              </div>
+              <small>{{ note.time }}</small>
+            </div>
+            {% empty %}
+            <p>No new notifications.</p>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="account-side-panel">
+            <h3>Quick links</h3>
+            <nav class="nav flex-column">
+              <a class="nav-link" href="{% url 'home:account_profile' %}"><i class="bi bi-person me-2"></i>Profile</a>
+              <a class="nav-link" href="{% url 'home:orders' %}"><i class="bi bi-clock-history me-2"></i>Orders</a>
+              <a class="nav-link" href="{% url 'home:account_addresses' %}"><i class="bi bi-geo-alt me-2"></i>Addresses</a>
+              <a class="nav-link" href="{% url 'home:account_cart' %}"><i class="bi bi-basket3 me-2"></i>Cart</a>
+              <a class="nav-link" href="{% url 'home:account_settings' %}"><i class="bi bi-gear me-2"></i>Settings</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Create Store · Admin · EasyIron{% endblock %}
+
+{% block content %}
+<main style="padding-top:90px;">
+  <section class="section-pad">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xl-9">
+          <div class="auth-card p-4 shadow-sm bg-white rounded-4">
+            <div class="section-heading text-center mb-4">
+              <span class="eyebrow">Admin</span>
+              <h2>Create Store + Staff Account</h2>
+              <p class="text-muted mb-0">Store staff will be able to login to the store dashboard.</p>
+            </div>
+
+            <form method="post">
+              {% csrf_token %}
+
+              <div class="row g-3">
+                <h4 class="mt-2">Store</h4>
+                <div class="col-md-4">
+                  <label class="form-label">Name*</label>
+                  <input class="form-control" name="name" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Code*</label>
+                  <input class="form-control" name="code" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Phone*</label>
+                  <input class="form-control" name="phone" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Email</label>
+                  <input class="form-control" type="email" name="email">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Address*</label>
+                  <input class="form-control" name="address" required>
+                </div>
+
+                <h4 class="mt-4">Store Staff (Manager)</h4>
+                <div class="col-md-4">
+                  <label class="form-label">Staff Name*</label>
+                  <input class="form-control" name="staff_name" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Staff Email*</label>
+                  <input class="form-control" type="email" name="staff_email" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Staff Phone</label>
+                  <input class="form-control" name="staff_phone">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Password*</label>
+                  <input class="form-control" type="password" name="staff_password" required>
+                </div>
+              </div>
+
+              <div class="mt-4 d-flex gap-2 justify-content-end">
+                <a class="btn btn-outline-secondary" href="{% url 'adminpanel:store_staff_list' %}">Cancel</a>
+                <button class="btn btn-brand" type="submit">Create</button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
+

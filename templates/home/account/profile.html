@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Profile · EasyIron{% endblock %}
+
+{% block content %}
+<main class="account-page">
+  <section class="section-pad">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xl-8">
+          <div class="auth-card p-4 shadow-sm bg-white rounded-4">
+            <div class="section-heading text-center mb-4">
+              <span class="eyebrow">Profile</span>
+              <h2>Update your personal details</h2>
+            </div>
+            <form method="post" action="{% url 'home:account_profile' %}">
+              {% csrf_token %}
+              <input type="hidden" name="profile_submit" value="1">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Name</label>
+                  {{ profile_form.name }}
+                  {{ profile_form.name.errors }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Email address</label>
+                  {{ profile_form.email }}
+                  {{ profile_form.email.errors }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Mobile number</label>
+                  {{ profile_form.mobile }}
+                  {{ profile_form.mobile.errors }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Address</label>
+                  {{ profile_form.address }}
+                  {{ profile_form.address.errors }}
+                </div>
+              </div>
+              <div class="mt-4 text-end">
+                <button type="submit" class="btn btn-brand">Save changes</button>
+              </div>
+            </form>
+
+            <hr class="my-5">
+
+            <div class="section-heading text-center mb-4">
+              <span class="eyebrow">Security</span>
+              <h2>Change your password</h2>
+            </div>
+            <form method="post" action="{% url 'home:account_profile' %}">
+              {% csrf_token %}
+              <input type="hidden" name="password_submit" value="1">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Current password</label>
+                  {{ password_form.old_password }}
+                  {{ password_form.old_password.errors }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">New password</label>
+                  {{ password_form.new_password1 }}
+                  {{ password_form.new_password1.errors }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Confirm new password</label>
+                  {{ password_form.new_password2 }}
+                  {{ password_form.new_password2.errors }}
+                </div>
+              </div>
+              <div class="mt-4 text-end">
+                <button type="submit" class="btn btn-outline-secondary">Update password</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

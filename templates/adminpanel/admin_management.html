@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Admin Management · EasyIron{% endblock %}
+
+{% block content %}
+<main style="padding-top:90px;">
+  <section class="section-pad">
+    <div class="container-fluid">
+      <div class="row gx-4">
+        <aside class="col-lg-3 mb-4 mb-lg-0">
+          <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <div class="rounded-circle bg-brand text-white d-flex align-items-center justify-content-center" style="width:52px; height:52px;">
+                <span class="fs-4">A</span>
+              </div>
+              <div>
+                <h5 class="mb-0">Admin Hasan</h5>
+                <p class="text-muted small mb-0">EasyIron Dashboard</p>
+              </div>
+            </div>
+            <nav class="nav flex-column gap-2">
+              <a class="nav-link active rounded-3 py-2 px-3" href="#">Dashboard</a>
+              <a class="nav-link rounded-3 py-2 px-3" href="#">Users</a>
+              <a class="nav-link rounded-3 py-2 px-3" href="#">Add User</a>
+              <a class="nav-link rounded-3 py-2 px-3" href="#">Profile</a>
+              <a class="nav-link rounded-3 py-2 px-3" href="#">Charts</a>
+              <a class="nav-link rounded-3 py-2 px-3" href="#">Tables</a>
+              <a class="nav-link rounded-3 py-2 px-3" href="#">Forms</a>
+              <a class="nav-link rounded-3 py-2 px-3" href="#">Alerts</a>
+            </nav>
+          </div>
+
+          <div class="bg-white rounded-4 shadow-sm p-4 mt-4">
+            <h6 class="mb-3">Quick Actions</h6>
+            <a class="btn btn-brand w-100 mb-2" href="#">Create Report</a>
+            <a class="btn btn-outline-secondary w-100" href="#">Export</a>
+          </div>
+        </aside>
+
+        <div class="col-lg-9">
+          <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
+            <div>
+              <span class="text-uppercase small text-secondary">Overview</span>
+              <h1 class="mb-2">Dashboard</h1>
+              <p class="text-muted mb-0">Monitor performance, sales, users, and support from one clean workspace.</p>
+            </div>
+            <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto">
+              <form class="d-flex gap-2 w-100" role="search">
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-search"></i></span>
+                  <input class="form-control" type="search" placeholder="Search users, orders, reports">
+                </div>
+              </form>
+              <a class="btn btn-outline-secondary" href="#">Export</a>
+              <a class="btn btn-brand" href="#">Create Report</a>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-xl-3">
+              <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div>
+                    <h6 class="mb-1">Revenue</h6>
+                    <p class="text-muted small mb-0">+12.5% from last month</p>
+                  </div>
+                  <span class="badge bg-light text-dark py-2">$48,240</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+              <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div>
+                    <h6 class="mb-1">Orders</h6>
+                    <p class="text-muted small mb-0">+8.2% new orders</p>
+                  </div>
+                  <span class="badge bg-light text-dark py-2">1,284</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+              <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div>
+                    <h6 class="mb-1">Customers</h6>
+                    <p class="text-muted small mb-0">+5.1% active users</p>
+                  </div>
+                  <span class="badge bg-light text-dark py-2">8,742</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+              <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div>
+                    <h6 class="mb-1">Tickets</h6>
+                    <p class="text-muted small mb-0 text-danger">3 urgent need review</p>
+                  </div>
+                  <span class="badge bg-light text-dark py-2">36</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-xl-8">
+              <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                <div class="d-flex align-items-start justify-content-between mb-4">
+                  <div>
+                    <h4 class="mb-1">Sales Performance</h4>
+                    <p class="text-muted mb-0">Monthly revenue compared with operational targets.</p>
+                  </div>
+                  <a class="text-secondary" href="#">View Details</a>
+                </div>
+                <div class="rounded-4" style="min-height:260px; background:#f7f9fc; display:flex; align-items:center; justify-content:center;">
+                  <span class="text-muted">Chart area</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-4">
+              <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                  <div>
+                    <h5 class="mb-1">Team Activity</h5>
+                    <p class="text-muted small mb-0">Recent operational updates.</p>
+                  </div>
+                </div>
+                <div class="list-group list-group-flush">
+                  <div class="list-group-item px-0 py-3">
+                    <div class="d-flex align-items-start justify-content-between gap-3">
+                      <div>
+                        <h6 class="mb-1">New campaign launched</h6>
+                        <p class="small text-muted mb-0">Marketing team published the May offer.</p>
+                      </div>
+                      <span class="badge bg-success">Live</span>
+                    </div>
+                  </div>
+                  <div class="list-group-item px-0 py-3">
+                    <div class="d-flex align-items-start justify-content-between gap-3">
+                      <div>
+                        <h6 class="mb-1">Payment batch cleared</h6>
+                        <p class="small text-muted mb-0">246 invoices were processed successfully.</p>
+                      </div>
+                      <span class="badge bg-primary">Done</span>
+                    </div>
+                  </div>
+                  <div class="list-group-item px-0 py-3">
+                    <div class="d-flex align-items-start justify-content-between gap-3">
+                      <div>
+                        <h6 class="mb-1">Support review</h6>
+                        <p class="small text-muted mb-0">4 tickets require your attention.</p>
+                      </div>
+                      <span class="badge bg-warning text-dark">Urgent</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

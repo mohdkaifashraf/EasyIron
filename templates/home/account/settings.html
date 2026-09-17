@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Settings · EasyIron{% endblock %}
+
+{% block content %}
+<main class="account-page">
+  <section class="section-pad">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xl-7">
+          <div class="auth-card p-4 shadow-sm bg-white rounded-4">
+            <div class="section-heading text-center mb-4">
+              <span class="eyebrow">Settings</span>
+              <h2>Manage account preferences</h2>
+            </div>
+            <form method="post" action="{% url 'home:account_settings' %}">
+              {% csrf_token %}
+              {{ settings_form.as_p }}
+              <div class="mt-4 text-end">
+                <button type="submit" name="settings_submit" class="btn btn-brand">Save preferences</button>
+              </div>
+            </form>
+            <hr class="my-5">
+            <div class="text-center">
+              <p class="text-muted">You can delete your account permanently below.</p>
+              <form method="post">
+                {% csrf_token %}
+                <button type="submit" name="delete_account" class="btn btn-outline-danger">Delete account</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

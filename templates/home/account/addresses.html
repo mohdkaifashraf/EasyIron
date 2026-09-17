@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Addresses · EasyIron{% endblock %}
+
+{% block content %}
+<main class="account-page">
+  <section class="section-pad">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-7">
+          <div class="section-heading"><span class="eyebrow">Addresses</span><h2>Manage your delivery addresses</h2></div>
+          <div class="row g-3 mb-4">
+            {% for address in addresses %}
+            <div class="col-md-6">
+              <div class="address-card p-4 shadow-sm bg-white rounded-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <div>
+                    <h4>{{ address.label }}</h4>
+                    <p class="mb-1">{{ address.line1 }}{% if address.line2 %}, {{ address.line2 }}{% endif %}</p>
+                    <p class="mb-0">{{ address.city }}, {{ address.state }}, {{ address.postal_code }}</p>
+                  </div>
+                  <span class="badge bg-{{ address.is_default|yesno:'success,secondary' }}">{{ address.is_default|yesno:'Default,Saved' }}</span>
+                </div>
+                <div class="address-actions d-flex gap-2">
+                  <a href="?edit={{ address.id }}" class="btn btn-outline-secondary btn-sm">Edit</a>
+                  <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="address_id" value="{{ address.id }}">
+                    <button type="submit" name="delete_address" class="btn btn-outline-danger btn-sm">Delete</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+              <div class="empty-state text-center p-5 bg-white shadow-sm rounded-4">
+                <i class="bi bi-geo-alt"></i>
+                <h3 class="mt-3">No saved addresses</h3>
+                <p>Add an address to make ordering easier and faster.</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="auth-card p-4 shadow-sm bg-white rounded-4">
+            <div class="section-heading mb-4"><span class="eyebrow">Add / edit</span><h2>{{ edit_address|yesno:'Edit address,Add new address' }}</h2></div>
+            <form method="post" action="{% url 'home:account_addresses' %}">
+              {% csrf_token %}
+              {{ form.as_p }}
+              <div class="mt-4 text-end">
+                <button type="submit" name="save_address" class="btn btn-brand">Save address</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

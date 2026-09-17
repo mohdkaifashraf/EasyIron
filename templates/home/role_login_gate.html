@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login as · EasyIron{% endblock %}
+
+{% block content %}
+<main class="auth-page role-login-page">
+  <section class="section-pad">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xl-9">
+          <div class="auth-card role-login-card">
+            <div class="section-heading text-center mb-4">
+              <span class="eyebrow">Login</span>
+              <h2>Choose your account type</h2>
+              <p class="text-muted mb-0">Login and go to your dashboard.</p>
+            </div>
+
+            <div class="role-grid">
+              <div>
+                <a class="role-card primary" href="{% url 'home:login' %}?next={{ next|urlencode }}">
+                  <span><i class="bi bi-person-heart"></i></span>
+                  <strong>Customer</strong>
+                  <small>Book services, manage cart, track orders.</small>
+                </a>
+              </div>
+              <div>
+                <a class="role-card" href="{% url 'store:login' %}?next={{ next|urlencode }}">
+                  <span><i class="bi bi-buildings"></i></span>
+                  <strong>Store</strong>
+                  <small>Handle incoming orders and inventory.</small>
+                </a>
+              </div>
+              <div>
+                <a class="role-card" href="{% url 'agent:login' %}?next={{ next|urlencode }}">
+                  <span><i class="bi bi-bicycle"></i></span>
+                  <strong>Agent</strong>
+                  <small>View pickups, deliveries, and earnings.</small>
+                </a>
+              </div>
+            </div>
+
+            <div class="admin-login-strip">
+              <span><i class="bi bi-shield-lock"></i> Admin access</span>
+              <a class="btn btn-brand" href="{% url 'adminpanel:login' %}?next={{ next|urlencode }}">
+                Continue
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
+

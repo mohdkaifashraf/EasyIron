@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign Up · EasyIron{% endblock %}
+
+{% block content %}
+<main class="auth-page">
+  <section class="section-pad">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+          <div class="auth-card p-4 shadow-sm bg-white rounded-4">
+            <div class="text-center mb-4">
+              <h2>Create your EasyIron account</h2>
+              <p>Sign up to manage orders, addresses, and pickups from one place.</p>
+            </div>
+            <form method="post" action="{% url 'home:signup' %}">
+              {% csrf_token %}
+              {% if form.non_field_errors %}
+              <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+              {% endif %}
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Name</label>
+                  {{ form.name }}
+                  {{ form.name.errors }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Email address</label>
+                  {{ form.email }}
+                  {{ form.email.errors }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Mobile number</label>
+                  {{ form.mobile }}
+                  {{ form.mobile.errors }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Address</label>
+                  {{ form.location }}
+                  {{ form.location.errors }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Password</label>
+                  {{ form.password1 }}
+                  {{ form.password1.errors }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Confirm password</label>
+                  {{ form.password2 }}
+                  {{ form.password2.errors }}
+                </div>
+              </div>
+              <div class="mt-4 text-center">
+                <button type="submit" class="btn btn-brand btn-lg w-100">Create account</button>
+              </div>
+            </form>
+            <div class="text-center mt-4">
+              <p>Already have an account? <a href="{% url 'home:login' %}">Login</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
