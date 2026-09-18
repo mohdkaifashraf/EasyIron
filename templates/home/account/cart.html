@@ -59,7 +59,16 @@
             <h3>Order summary</h3>
             <div class="d-flex justify-content-between mt-4"><span>Subtotal</span><strong>₹{{ subtotal }}</strong></div>
             <div class="mt-4">
-              <a href="#" class="btn btn-brand w-100">Proceed to checkout</a>
+              <button
+                type="button"
+                id="razorpayCheckout"
+                class="btn btn-brand w-100"
+                data-create-url="{% url 'home:create_checkout_order' %}"
+                data-verify-url="{% url 'home:verify_checkout_payment' %}"
+                {% if not items %}disabled{% endif %}
+              >
+                Proceed to checkout
+              </button>
             </div>
           </div>
         </div>
@@ -67,4 +76,8 @@
     </div>
   </section>
 </main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'user_razor/razor.js' %}"></script>
 {% endblock %}

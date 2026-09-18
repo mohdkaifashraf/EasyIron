@@ -1,6 +1,9 @@
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = "django-insecure-development-only-change-in-production"
 DEBUG = True
@@ -70,3 +73,6 @@ LOGIN_REDIRECT_URL = "home:account"
 LOGOUT_REDIRECT_URL = "home:login"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID", "")
+RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET", "")

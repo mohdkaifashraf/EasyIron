@@ -1,6 +1,9 @@
 import json
 from decimal import Decimal, InvalidOperation
+from uuid import uuid4
 
+import razorpay
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -432,6 +435,93 @@ def account_cart(request):
     items = cart.items.all()
     subtotal = cart.total_amount()
     return render(request, "home/account/cart.html", {"cart": cart, "items": items, "subtotal": subtotal})
+
+
+@login_required
+@require_POST
+def create_checkout_order(request):
+    cart = get_active_cart(request.user)
+    amount = cart.total_amount()
+    if amount <= 0:
+        return JsonResponse({"success": False, "message": "Your cart is empty."}, status=400)
+
+    if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
+        return JsonResponse(
+            {"success": False, "message": "Razorpay test keys are not configured."},
+            status=503,
+        )
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    try:
+        razorpay_order = client.order.create(
+            {
+                "amount": int(amount * 100),
+                "currency": "INR",
+                "receipt": f"cart_{request.user.id}_{uuid4().hex[:12]}",
+            }
+        )
+    except Exception:
+        return JsonResponse(
+            {"success": False, "message": "Unable to start Razorpay checkout."},
+            status=502,
+        )
+
+    order = Order.objects.create(
+        user=request.user,
+        order_id=f"EI{uuid4().hex[:20].upper()}",
+        total_amount=amount,
+        razorpay_order_id=razorpay_order["id"],
+    )
+    return JsonResponse(
+        {
+            "success": True,
+            "key": settings.RAZORPAY_KEY_ID,
+            "amount": int(amount * 100),
+            "currency": "INR",
+            "razorpay_order_id": razorpay_order["id"],
+            "order_id": order.order_id,
+            "name": "EasyIron",
+            "prefill": {
+                "name": request.user.get_full_name(),
+                "email": request.user.email,
+            },
+        }
+    )
+
+
+@login_required
+@require_POST
+def verify_checkout_payment(request):
+    try:
+        payload = json.loads(request.body or "{}")
+        order = get_object_or_404(
+            Order,
+            order_id=payload.get("order_id"),
+            user=request.user,
+            payment_status=Order.PAYMENT_PENDING,
+        )
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        client.utility.verify_payment_signature(
+            {
+                "razorpay_order_id": payload["razorpay_order_id"],
+                "razorpay_payment_id": payload["razorpay_payment_id"],
+                "razorpay_signature": payload["razorpay_signature"],
+            }
+        )
+    except (json.JSONDecodeError, KeyError, razorpay.errors.SignatureVerificationError):
+        return JsonResponse({"success": False, "message": "Payment verification failed."}, status=400)
+
+    if order.razorpay_order_id != payload["razorpay_order_id"]:
+        return JsonResponse({"success": False, "message": "Payment order mismatch."}, status=400)
+
+    order.payment_status = Order.PAYMENT_PAID
+    order.razorpay_payment_id = payload["razorpay_payment_id"]
+    order.save(update_fields=["payment_status", "razorpay_payment_id"])
+    cart = get_active_cart(request.user)
+    cart.items.all().delete()
+    cart.active = False
+    cart.save(update_fields=["active", "updated_at"])
+    return JsonResponse({"success": True, "redirect_url": reverse("home:orders")})
 
 
 @login_required
