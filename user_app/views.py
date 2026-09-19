@@ -1,4 +1,5 @@
 import json
+from datetime import date
 from decimal import Decimal, InvalidOperation
 from uuid import uuid4
 
@@ -12,7 +13,10 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_POST
+
+from store_app.models import Store
 
 from .forms import (
     AccountSettingsForm,
@@ -349,6 +353,37 @@ def account_addresses(request):
     )
 
 
+@login_required
+@require_POST
+def add_checkout_address(request):
+    form = AddressForm(request.POST)
+    if not form.is_valid():
+        errors = {
+            field: messages[0]
+            for field, messages in form.errors.items()
+        }
+        return JsonResponse(
+            {"success": False, "errors": errors, "message": "Please check the address details."},
+            status=400,
+        )
+
+    address = form.save(commit=False)
+    address.user = request.user
+    if address.is_default:
+        Address.objects.filter(user=request.user).update(is_default=False)
+    address.save()
+    return JsonResponse(
+        {
+            "success": True,
+            "address": {
+                "id": address.pk,
+                "label": address.label,
+                "summary": f"{address.line1}, {address.city}",
+            },
+        }
+    )
+
+
 @require_POST
 def add_to_cart(request):
     if not request.user.is_authenticated:
@@ -434,7 +469,17 @@ def account_cart(request):
             return redirect("home:account_cart")
     items = cart.items.all()
     subtotal = cart.total_amount()
-    return render(request, "home/account/cart.html", {"cart": cart, "items": items, "subtotal": subtotal})
+    return render(
+        request,
+        "home/account/cart.html",
+        {
+            "cart": cart,
+            "items": items,
+            "subtotal": subtotal,
+            "stores": Store.objects.filter(is_active=True).order_by("name"),
+            "addresses": request.user.addresses.all(),
+        },
+    )
 
 
 @login_required
@@ -449,6 +494,23 @@ def create_checkout_order(request):
         return JsonResponse(
             {"success": False, "message": "Razorpay test keys are not configured."},
             status=503,
+        )
+
+    try:
+        payload = json.loads(request.body or "{}")
+        store = Store.objects.get(pk=payload.get("store_id"), is_active=True)
+        address = request.user.addresses.get(pk=payload.get("address_id"))
+        pickup_date = date.fromisoformat(payload.get("pickup_date", ""))
+    except (json.JSONDecodeError, TypeError, ValueError, Store.DoesNotExist, Address.DoesNotExist):
+        return JsonResponse(
+            {"success": False, "message": "Choose a store, pickup address, and valid pickup date."},
+            status=400,
+        )
+
+    if pickup_date < timezone.localdate():
+        return JsonResponse(
+            {"success": False, "message": "Pickup date cannot be in the past."},
+            status=400,
         )
 
     client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
@@ -468,7 +530,13 @@ def create_checkout_order(request):
 
     order = Order.objects.create(
         user=request.user,
+        store=store,
         order_id=f"EI{uuid4().hex[:20].upper()}",
+        pickup_address_record=address,
+        pickup_address=", ".join(
+            part for part in [address.line1, address.line2, address.city, address.state, address.postal_code] if part
+        ),
+        pickup_date=pickup_date,
         total_amount=amount,
         razorpay_order_id=razorpay_order["id"],
     )

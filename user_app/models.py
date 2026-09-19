@@ -125,7 +125,14 @@ class Order(models.Model):
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="orders", on_delete=models.CASCADE)
+    store = models.ForeignKey(
+        "store_app.Store", related_name="customer_orders", null=True, blank=True, on_delete=models.PROTECT
+    )
     order_id = models.CharField(max_length=32, unique=True)
+    pickup_address_record = models.ForeignKey(
+        Address, related_name="orders", null=True, blank=True, on_delete=models.SET_NULL
+    )
+    pickup_address = models.TextField(blank=True)
     pickup_date = models.DateField(null=True, blank=True)
     delivery_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=STATUS_PLACED)
