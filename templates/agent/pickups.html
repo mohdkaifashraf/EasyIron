@@ -1,5 +1,0 @@
-{% extends "agent/base.html" %}{% block title %}Pickups{% endblock %}{% block content %}
-<div class="agent-page-head"><div><span>Customer collections</span><h1>Pickup Management</h1><p>Accept, navigate and bring customer garments safely to the store.</p></div></div>
-<form class="agent-filter"><div><i class="bi bi-search"></i><input name="q" value="{{ query }}" placeholder="Search order, customer or phone"></div><select name="status"><option value="">All statuses</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button>Filter</button></form>
-<div class="task-grid">{% for assignment in assignments %}{% include "agent/partials/pickup_card.html" %}{% empty %}<div class="empty-agent-state"><i class="bi bi-search"></i><h3>No pickups found</h3><p>New assigned pickups will appear here.</p></div>{% endfor %}</div>
-{% endblock %}

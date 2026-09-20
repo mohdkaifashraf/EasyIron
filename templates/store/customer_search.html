@@ -1,7 +1,0 @@
-{% extends "store/base.html" %}
-{% block title %}Customer Search{% endblock %}
-{% block content %}
-<div class="page-heading"><div><span class="page-kicker">Find records</span><h1>Customer Search</h1><p>Search by customer name, phone number or order ID.</p></div></div>
-<form class="large-search" method="get"><i class="bi bi-search"></i><input name="q" value="{{ query }}" placeholder="Enter name, phone number or order ID" autofocus><button>Search Records</button></form>
-{% if query %}<section class="panel"><div class="panel-heading"><div><h2>Search Results</h2><p>{{ orders|length }} order{{ orders|length|pluralize }} found for “{{ query }}”</p></div></div>{% include "store/partials/order_table.html" with orders=orders %}</section>{% else %}<div class="search-placeholder"><i class="bi bi-person-lines-fill"></i><h2>Find a customer or order</h2><p>Search records to view service history, current status and order details.</p></div>{% endif %}
-{% endblock %}

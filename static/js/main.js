@@ -169,4 +169,54 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  const trackingCard = document.getElementById("orderTracking");
+  if (trackingCard?.dataset.orderId) {
+    const statusLabels = {
+      placed: "Order placed",
+      pickup_assigned: "Pickup assigned",
+      picked_up: "Picked up",
+      processing: "Processing",
+      ironing_completed: "Ready for delivery",
+      out_for_delivery: "Out for delivery",
+      delivered: "Delivered",
+    };
+    const progressByStatus = {
+      placed: 0,
+      pickup_assigned: 16,
+      picked_up: 33,
+      processing: 50,
+      ironing_completed: 67,
+      out_for_delivery: 84,
+      delivered: 100,
+    };
+
+    const updateTracking = async () => {
+      try {
+        const response = await fetch(trackingCard.dataset.statusUrl, {
+          headers: { "Accept": "application/json" },
+          credentials: "same-origin",
+        });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (!data.order) return;
+
+        const status = data.order.status;
+        const progress = progressByStatus[status] ?? 0;
+        trackingCard.dataset.orderId = data.order.id;
+        trackingCard.querySelector("[data-tracking-order]").textContent = data.order.id;
+        trackingCard.querySelector("[data-tracking-status]").textContent = statusLabels[status] || data.order.status_label;
+        trackingCard.querySelector("[data-tracking-progress]").style.width = `${progress}%`;
+        trackingCard.classList.toggle("is-delivering", status === "out_for_delivery");
+        trackingCard.querySelectorAll("[data-step]").forEach((step) => {
+          step.classList.toggle("is-current", step.dataset.step === status);
+        });
+      } catch (error) {
+        console.debug("Order tracking update unavailable", error);
+      }
+    };
+
+    updateTracking();
+    window.setInterval(updateTracking, 10000);
+  }
+
 });

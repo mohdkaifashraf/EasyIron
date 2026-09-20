@@ -57,6 +57,7 @@ DATABASES = {
         "NAME": BASE_DIR / "easyiron_db.sqlite3",
     }
 }
+ 
 
 AUTH_PASSWORD_VALIDATORS = []
 LANGUAGE_CODE = "en-in"

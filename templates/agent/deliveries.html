@@ -1,5 +1,0 @@
-{% extends "agent/base.html" %}{% block title %}Deliveries{% endblock %}{% block content %}
-<div class="agent-page-head"><div><span>Fresh clothes going home</span><h1>Return Deliveries</h1><p>Collect completed orders from the store and deliver them to customers.</p></div></div>
-<form class="agent-filter"><div><i class="bi bi-search"></i><input name="q" value="{{ query }}" placeholder="Search order, customer or phone"></div><select name="status"><option value="">All statuses</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button>Filter</button></form>
-<div class="task-grid">{% for assignment in assignments %}{% include "agent/partials/delivery_card.html" %}{% empty %}<div class="empty-agent-state"><i class="bi bi-house-check"></i><h3>No deliveries found</h3><p>Ready-for-delivery orders will appear here.</p></div>{% endfor %}</div>
-{% endblock %}

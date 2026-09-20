@@ -25,27 +25,14 @@
                 </a>
               </div>
               <div>
-                <a class="role-card" href="{% url 'store:login' %}?next={{ next|urlencode }}">
-                  <span><i class="bi bi-buildings"></i></span>
-                  <strong>Store</strong>
-                  <small>Handle incoming orders and inventory.</small>
-                </a>
-              </div>
-              <div>
-                <a class="role-card" href="{% url 'agent:login' %}?next={{ next|urlencode }}">
-                  <span><i class="bi bi-bicycle"></i></span>
-                  <strong>Agent</strong>
-                  <small>View pickups, deliveries, and earnings.</small>
+                <a class="role-card" href="{% url 'home:login' %}?next={{ next|urlencode }}">
+                  <span><i class="bi bi-person-heart"></i></span>
+                  <strong>Customer</strong>
+                  <small>Book services, manage cart, and track orders.</small>
                 </a>
               </div>
             </div>
 
-            <div class="admin-login-strip">
-              <span><i class="bi bi-shield-lock"></i> Admin access</span>
-              <a class="btn btn-brand" href="{% url 'adminpanel:login' %}?next={{ next|urlencode }}">
-                Continue
-              </a>
-            </div>
           </div>
         </div>
       </div>

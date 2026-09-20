@@ -1,5 +1,5 @@
 import json
-from datetime import date
+from datetime import date, datetime, time
 from decimal import Decimal, InvalidOperation
 from uuid import uuid4
 
@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -16,7 +17,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from store_app.models import Store
+from store_app.models import Order as StoreOrder, OrderItem as StoreOrderItem, Store
 
 from .forms import (
     AccountSettingsForm,
@@ -121,6 +122,11 @@ def homepage(request):
     categories = list(ServiceCategory.objects.prefetch_related("items").all())
     banners = list(Banner.objects.filter(is_active=True))
     reviews = list(CustomerReview.objects.filter(is_featured=True))
+    latest_order = None
+    if request.user.is_authenticated:
+        latest_order = request.user.orders.filter(
+            payment_status=Order.PAYMENT_PAID,
+        ).first()
 
     if not categories:
         categories = [
@@ -156,7 +162,30 @@ def homepage(request):
             "banners": banners,
             "reviews": reviews,
             "item_groups": DEFAULT_ITEM_GROUPS,
+            "latest_order": latest_order,
         },
+    )
+
+
+@login_required
+def order_tracking_status(request):
+    order = request.user.orders.filter(
+        payment_status=Order.PAYMENT_PAID,
+    ).first()
+    if not order:
+        return JsonResponse({"success": True, "order": None})
+
+    return JsonResponse(
+        {
+            "success": True,
+            "order": {
+                "id": order.order_id,
+                "status": order.status,
+                "status_label": order.get_status_display(),
+                "progress": order.status_index() / 6 * 100,
+                "updated_at": order.created_at.isoformat(),
+            },
+        }
     )
 
 
@@ -246,7 +275,7 @@ def account_profile(request):
         if "profile_submit" in request.POST:
             profile_form = ProfileUpdateForm(request.POST, user=request.user)
             password_form = PasswordChangeForm(request.user)
-            if profile_form.is_valiwd():
+            if profile_form.is_valid():
                 profile_form.save()
                 messages.success(request, "Your profile was updated successfully.")
                 return redirect("home:account_profile")
@@ -476,8 +505,8 @@ def account_cart(request):
             "cart": cart,
             "items": items,
             "subtotal": subtotal,
-            "stores": Store.objects.filter(is_active=True).order_by("name"),
             "addresses": request.user.addresses.all(),
+            "stores": Store.objects.filter(is_active=True).order_by("name"),
         },
     )
 
@@ -562,11 +591,9 @@ def create_checkout_order(request):
 def verify_checkout_payment(request):
     try:
         payload = json.loads(request.body or "{}")
-        order = get_object_or_404(
-            Order,
+        order = Order.objects.get(
             order_id=payload.get("order_id"),
             user=request.user,
-            payment_status=Order.PAYMENT_PENDING,
         )
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
         client.utility.verify_payment_signature(
@@ -576,19 +603,43 @@ def verify_checkout_payment(request):
                 "razorpay_signature": payload["razorpay_signature"],
             }
         )
-    except (json.JSONDecodeError, KeyError, razorpay.errors.SignatureVerificationError):
+    except (json.JSONDecodeError, KeyError, Order.DoesNotExist, razorpay.errors.SignatureVerificationError):
         return JsonResponse({"success": False, "message": "Payment verification failed."}, status=400)
 
     if order.razorpay_order_id != payload["razorpay_order_id"]:
         return JsonResponse({"success": False, "message": "Payment order mismatch."}, status=400)
 
-    order.payment_status = Order.PAYMENT_PAID
-    order.razorpay_payment_id = payload["razorpay_payment_id"]
-    order.save(update_fields=["payment_status", "razorpay_payment_id"])
-    cart = get_active_cart(request.user)
-    cart.items.all().delete()
-    cart.active = False
-    cart.save(update_fields=["active", "updated_at"])
+    if order.payment_status == Order.PAYMENT_PAID:
+        return JsonResponse({"success": True, "redirect_url": reverse("home:orders")})
+
+    with transaction.atomic():
+        order = Order.objects.select_for_update().get(pk=order.pk)
+        cart = get_active_cart(request.user)
+        cart_items = list(cart.items.all())
+        store_order, created = StoreOrder.objects.get_or_create(
+            order_number=order.order_id,
+            defaults={
+                "store": order.store,
+                "customer_name": request.user.get_full_name() or request.user.username,
+                "customer_phone": get_profile(request.user).mobile[:20],
+                "pickup_address": order.pickup_address,
+                "pickup_date": timezone.make_aware(datetime.combine(order.pickup_date, time.min)),
+                "status": StoreOrder.RECEIVED,
+            },
+        )
+        if created:
+            StoreOrderItem.objects.bulk_create([
+                StoreOrderItem(order=store_order, item_name=item.item_name, quantity=item.quantity, price=item.price)
+                for item in cart_items
+            ])
+            store_order.add_tracking(StoreOrder.RECEIVED, "Paid order received by store.")
+        order.payment_status = Order.PAYMENT_PAID
+        order.razorpay_payment_id = payload["razorpay_payment_id"]
+        order.save(update_fields=["payment_status", "razorpay_payment_id"])
+        cart.items.all().delete()
+        cart.active = False
+        cart.save(update_fields=["active", "updated_at"])
+
     return JsonResponse({"success": True, "redirect_url": reverse("home:orders")})
 
 

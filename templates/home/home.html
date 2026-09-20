@@ -158,10 +158,20 @@
           <span class="eyebrow">The EasyIron promise</span>
           <h2>Garment care you can <em>count on.</em></h2>
           <p>From pickup to delivery, every detail is designed around quality, transparency and your peace of mind.</p>
-          <div class="tracking-demo">
-            <div class="d-flex justify-content-between"><span>Order #EI2048</span><strong>Out for delivery</strong></div>
-            <div class="track-line"><span></span></div>
-            <div class="d-flex justify-content-between small"><span>Picked up</span><span>Processed</span><span>On the way</span></div>
+          <div
+            class="tracking-demo{% if latest_order %} is-live{% endif %}"
+            id="orderTracking"
+            data-status-url="{% url 'home:order_tracking_status' %}"
+            {% if latest_order %}data-order-id="{{ latest_order.order_id }}"{% endif %}
+          >
+            {% if latest_order %}
+            <div class="d-flex justify-content-between"><span>Order #<span data-tracking-order>{{ latest_order.order_id }}</span></span><strong data-tracking-status>{{ latest_order.get_status_display }}</strong></div>
+            <div class="track-line"><span data-tracking-progress></span></div>
+            <div class="d-flex justify-content-between small"><span class="tracking-step" data-step="picked_up">Picked up</span><span class="tracking-step" data-step="processing">Processed</span><span class="tracking-step" data-step="out_for_delivery">On the way</span></div>
+            {% else %}
+            <div class="d-flex justify-content-between"><span>Order tracking</span><strong>Ready when you are</strong></div>
+            <p class="mb-0 mt-3 small">Sign in and place an order to see its live journey here.</p>
+            {% endif %}
           </div>
         </div>
         <div class="col-lg-7">

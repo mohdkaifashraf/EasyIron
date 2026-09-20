@@ -1,8 +1,14 @@
+import json
+from datetime import date
+from unittest.mock import patch
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Cart, CartItem
+from store_app.models import Order as StoreOrder, Store
+
+from .models import Cart, CartItem, CustomerProfile, Order
 
 
 class CartAccessTests(TestCase):
@@ -87,4 +93,39 @@ class CartAccessTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["subtotal"], 0)
         self.assertFalse(CartItem.objects.filter(pk=item.id).exists())
+
+    @patch("user_app.views.razorpay.Client")
+    def test_payment_verification_creates_missing_profile(self, client_class):
+        self.client.login(username="tester", password="secret123")
+        store = Store.objects.create(name="Main Store", code="MAIN", address="123 Main Street")
+        order = Order.objects.create(
+            user=self.user,
+            store=store,
+            order_id="EI_TEST_PAYMENT",
+            pickup_date=date.today(),
+            pickup_address="123 Main Street",
+            razorpay_order_id="order_test",
+        )
+        cart = Cart.objects.create(user=self.user, active=True)
+        CartItem.objects.create(cart=cart, item_name="Shirt", price=10, quantity=1)
+
+        response = self.client.post(
+            reverse("home:verify_checkout_payment"),
+            data=json.dumps(
+                {
+                    "order_id": order.order_id,
+                    "razorpay_order_id": "order_test",
+                    "razorpay_payment_id": "pay_test",
+                    "razorpay_signature": "signature_test",
+                }
+            ),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["success"])
+        self.assertTrue(CustomerProfile.objects.filter(user=self.user).exists())
+        self.assertEqual(Order.objects.get(pk=order.pk).payment_status, Order.PAYMENT_PAID)
+        self.assertTrue(StoreOrder.objects.filter(order_number=order.order_id).exists())
+        client_class.return_value.utility.verify_payment_signature.assert_called_once()
 
